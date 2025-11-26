@@ -1,10 +1,21 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router";
+import { ThemeProvider } from "@mui/material";
+import { Provider } from "react-redux";
+import { router } from './router';
+import { stores } from './stores/stores';
+import "../index.css";
+import { createAppTheme } from "./assets/theme";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const theme = createAppTheme();
+
+createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <Provider store={stores}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
+  </React.StrictMode>
+);

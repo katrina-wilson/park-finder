@@ -1,0 +1,25 @@
+@import "./src/assets/colors.css";
+@import "tailwindcss" important prefix(tw);
+
+@theme inline {
+  --color-primary-light: var(--color-primary-light);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+
+  --color-secondary-light: var(--color-secondary-light);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-dark: var(--color-secondary-dark);
+}
+
+html, body, #root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+html {
+  overflow: visible !important;
+}
+
+.wizard-font {
+  font-family:"Uncial Antiqua";
+}
