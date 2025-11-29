@@ -7,6 +7,7 @@ import { router } from './router';
 import { stores } from './stores/stores';
 import "../index.css";
 import { createAppTheme } from "./assets/theme";
+import 'leaflet/dist/leaflet.css';
 
 const theme = createAppTheme();
 
