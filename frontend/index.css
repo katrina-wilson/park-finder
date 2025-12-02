@@ -9,6 +9,9 @@
   --color-secondary-light: var(--color-secondary-light);
   --color-secondary: var(--color-secondary);
   --color-secondary-dark: var(--color-secondary-dark);
+
+  --color-background: var(--color-background);
+  --color-border: var(--color-border);
 }
 
 html, body, #root {

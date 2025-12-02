@@ -1,18 +1,18 @@
 import * as React from 'react'; 
-import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllParks } from "../stores/parksSlice";
-import ParkCard from '../components/ParkCard';
 import Map from '../components/Map';
-import { CircularProgress, TextField } from '@mui/material';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
-
+import { CircularProgress } from '@mui/material';
+import ParkColumn from "../components/ParkColumn";
 
 function Home() {
 
     const dispatch = useDispatch();
     const { parks, status, error } = useSelector((state) => state.parks);
+
+    const [searchValue, setSearchValue] = React.useState('');
+    const [searchFilterParks, setSearchFilterParks] = React.useState(parks);
+    const [selectedPark, setSelectedPark] = React.useState(null);
 
     React.useEffect(() => {
         if (status === 'idle') {
@@ -20,10 +20,30 @@ function Home() {
         }
     }, [status, dispatch]);
 
-    return (
-        <div className='tw:flex tw:p-6 tw:w-full tw:h-full'>
+    React.useEffect(() => {
+        setSearchFilterParks(parks);
+    }, [parks]);
 
-            <div className="tw:flex tw:flex-col tw:p-6 tw:w-full tw:h-full">
+    React.useEffect(() => {
+        const filtered = parks.filter((p) =>
+            p.name.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setSearchFilterParks(filtered);
+    }, [searchValue, parks]);
+
+
+    return (
+        <div className='tw:flex tw:md:flex-row tw:flex-col tw:p-6 tw:w-full tw:h-full tw:bg-background tw:space-x-6'>
+
+            <div className='tw:w-fit tw:min-w-[65%] tw:h-full'>
+                <Map
+                    allParks={parks}
+                    searchFilterParks={searchFilterParks}
+                    selectedPark={selectedPark}
+                />
+            </div>
+
+            <div className="tw:flex tw:flex-col tw:w-full tw:h-full">
                 {status === 'loading' && (
                     <CircularProgress/>
                 )}
@@ -31,35 +51,15 @@ function Home() {
                     <p>Error: {error}</p>
                 )}
                 {status === 'succeeded' && (
-                    <div className='tw:flex tw:flex-col tw:items-center tw:px-4'>
-                        
-                        <TextField 
-                            variant='outlined' 
-                            label="Search Parks"
-                            className='tw:w-full tw:pb-6'
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon/>
-                                    </InputAdornment>
-                                    ),
-                                },
-                            }}  
-                        />
-
-                        <div className='tw:space-y-3 tw:h-full tw:overflow-y-auto'>
-                            {parks.map((p) => (
-                                <>
-                                    <ParkCard park={p} />
-                                </>
-                            ))}
-                        </div>
-                    </div>
+                    <ParkColumn
+                        searchValue={searchValue}
+                        setSearchValue={setSearchValue}
+                        searchFilterParks={searchFilterParks}
+                        selectedPark={selectedPark}
+                        setSelectedPark={setSelectedPark}
+                    />
                 )}
             </div>
-
-            <Map/>
 
         </div>
         
