@@ -1,4 +1,5 @@
-import { Chip, CircularProgress, IconButton, TextField } from '@mui/material';
+import * as React from 'react'; 
+import { IconButton, TextField } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -6,6 +7,9 @@ import Tooltip from '@mui/material/Tooltip';
 import ParkCard from '../components/ParkCard';
 import { Park } from "../types";
 import ParkDetails from './ParkDetails';
+import ParkFilterDropdown from './ParkFilterDropdown';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 interface ParkColumnProps {
     searchValue: string;
@@ -18,26 +22,40 @@ interface ParkColumnProps {
 
 function ParkColumn({ searchValue, setSearchValue, searchFilterParks, selectedPark, setSelectedPark }: ParkColumnProps) {
 
+    const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
 
     return (
         <div className='tw:flex tw:flex-col tw:h-full tw:items-center'>
             { !selectedPark ? (
                 <>
                     <div className='tw:flex tw:flex-col tw:w-full tw:items-end tw:pb-3'>
-                        <div className='tw:flex tw:w-full tw:space-x-2'>
+                        <div className='tw:flex tw:w-full tw:space-x-4'>
                             <TextField 
                                 variant='outlined' 
                                 label="Search Parks"
-                                className='tw:w-full'
+                                className='tw:w-full tw:bg-white'
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 slotProps={{
                                     input: {
                                         startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon/>
-                                        </InputAdornment>
+                                            <InputAdornment position="start">
+                                                <SearchIcon/>
+                                            </InputAdornment>
                                         ),
+                                        endAdornment: (
+                                            searchValue && (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="Clear"
+                                                        edge="end"
+                                                        onClick={() => setSearchValue("")}
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        )
                                     },
                                 }}  
                             />
@@ -45,11 +63,18 @@ function ParkColumn({ searchValue, setSearchValue, searchFilterParks, selectedPa
                             <Tooltip title="Filter Parks">
                                 <IconButton 
                                     aria-label="Filter Parks"
-                                    onClick={() => {}}
+                                    className='tw:w-[56px]'
+                                    onClick={(e) => setFilterAnchorEl(e.currentTarget)}
                                 >
                                     <FilterAltIcon/>
                                 </IconButton>
                             </Tooltip>
+
+                            <ParkFilterDropdown
+                                anchorEl={filterAnchorEl}
+                                open={!!filterAnchorEl}
+                                handleClose={() => setFilterAnchorEl(null)}
+                            />
                         </div>
 
                         <span className='tw:text-sm tw:min-w-fit tw:text-gray-600 tw:pt-3 tw:italic'>

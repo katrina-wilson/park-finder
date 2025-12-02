@@ -1,26 +1,16 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { getParksCenter } from '../utils/coordinatesUtils';
 import { Park } from '../types';
+import { Button } from '@mui/material';
 
-
-// Fix default marker icons
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
 
 interface MapProps {
   allParks: Park[];
   searchFilterParks: Park[];
   selectedPark: Park | null;
+  setSelectedPark: (park: Park | null) => void;
 };
 
 interface ZoomToParkProps {
@@ -37,7 +27,7 @@ function ZoomToPark({ center, zoom }: ZoomToParkProps) {
 };
 
 
-function Map({ allParks, searchFilterParks, selectedPark }: MapProps) {
+function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: MapProps) {
 
   const [mapCenter, setMapCenter] = React.useState(null);
 
@@ -58,14 +48,17 @@ function Map({ allParks, searchFilterParks, selectedPark }: MapProps) {
 
 
   return (
-    <>
+    <div className='tw:h-full tw:w-full tw:rounded-2xl tw:shadow tw:overflow-hidden tw:border tw:border-border'>
       { mapCenter && 
         <MapContainer
           center={center}
           scrollWheelZoom={true}
           zoomControl={true}
           zoom={13}
-          style={{ height: '100%', width: '100%' }}
+          style={{ 
+            height: '100%', 
+            width: '100%', 
+          }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -80,7 +73,17 @@ function Map({ allParks, searchFilterParks, selectedPark }: MapProps) {
                   position={[p?.lat, p?.lon]}
                 >
                   <Popup>
-                    {p?.name}
+                    <div className='tw:text-lg tw:font-bold tw:pb-3'>
+                      {p?.name}
+                    </div>
+                    <div className='tw:flex tw:w-full tw:justify-end'>
+                      <Button 
+                        variant='contained'
+                        onClick={() => setSelectedPark(p)}
+                      >
+                        View Details
+                      </Button>
+                    </div>
                   </Popup>
                 </Marker>
               </>
@@ -94,7 +97,7 @@ function Map({ allParks, searchFilterParks, selectedPark }: MapProps) {
 
         </MapContainer>
       }
-    </>
+    </div>
   );
 }
 

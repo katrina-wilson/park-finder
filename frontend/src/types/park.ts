@@ -7,4 +7,5 @@ export interface Park {
   lon: number;
   sizeAcres?: number;
   hasPlayground?: boolean;
+  amenities: string[];
 }

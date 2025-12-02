@@ -40,6 +40,7 @@ function Home() {
                     allParks={parks}
                     searchFilterParks={searchFilterParks}
                     selectedPark={selectedPark}
+                    setSelectedPark={setSelectedPark}
                 />
             </div>
 
