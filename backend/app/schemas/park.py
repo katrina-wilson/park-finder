@@ -13,5 +13,10 @@ class ParkBase(BaseModel):
     size_acres: Optional[float] = None
     amenities: List[str] = []
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
+
+
+class ParkSimilarityResponse(ParkBase):
+    similarity_score: float = 0.0
+
+    model_config = {"from_attributes": True}

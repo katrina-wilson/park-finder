@@ -10,7 +10,6 @@ AMENITY_LIST = [
     "amusement_train",
     "arts_center",
     "ball_fields",
-    "ball_fields",
     "outdoor_basketball",
     "biking",
     "bmx_track",
@@ -35,7 +34,6 @@ AMENITY_LIST = [
     "greenway_access",
     "grill",
     "gym",
-    "gym",
     "handball",
     "horseshoe",
     "inline_skating",
@@ -46,10 +44,7 @@ AMENITY_LIST = [
     "mountain_bike_trails",
     "meeting_room",
     "multipurpose_field",
-    "multipurpose_field",
     "museum",
-    "community_center",
-    "outdoor_basketball",
     "parking_lot",
     "performance_space",
     "picnic_tables",
@@ -57,24 +52,17 @@ AMENITY_LIST = [
     "playground",
     "pool",
     "restrooms",
-    "restrooms",
     "sand_volleyball",
-    "shelter",
     "skate_park",
     "soccer",
-    "ball_fields",
     "sprayground",
     "swings",
     "teen",
     "tennis_courts",
-    "tennis_courts",
-    "tennis_courts",
     "theater",
     "track",
     "walking_trails",
-    "walking_trails",
-    "water_fountain",
-    "ball_fields"
+    "water_fountain"
 ]
 
 TYPE_LIST = [
@@ -97,22 +85,9 @@ FEATURE_WEIGHTS = {
 
 
 def vectorize_park(park):
-
-    print("vectorizing...")
     size_location_list = [(park.size_acres or 0), (park.lat or 0), (park.lon or 0)]
     type_list = [1 if park.type == t else 0 for t in TYPE_LIST]
     amenity_list = [1 if a in (park.amenities or []) else 0 for a in AMENITY_LIST]
-
-    print("TYPE", len(type_list))
-    print("AMENITY", len(amenity_list))
-
-    d = size_location_list + type_list + amenity_list
-    i = ["size_acres", "lat", "lon"] + TYPE_LIST + AMENITY_LIST
-
-    print("d", len(d))
-    print("i", len(i))
-
-
 
     park_series = pd.Series(data=(size_location_list + type_list + amenity_list), index=(["size_acres", "lat", "lon"] + TYPE_LIST + AMENITY_LIST))
 
@@ -125,19 +100,39 @@ def scale_size_location(df: pd.DataFrame):
     return df
 
 
+def apply_weights(df: pd.DataFrame):
+    weight_map = {
+        "size_acres": FEATURE_WEIGHTS["size_acres"],
+        "lat": FEATURE_WEIGHTS["location"],
+        "lon": FEATURE_WEIGHTS["location"],
+    }
+
+    for type in TYPE_LIST:
+        weight_map[type] = FEATURE_WEIGHTS["type"]
+    for amenity in AMENITY_LIST:
+        weight_map[amenity] = FEATURE_WEIGHTS["amenities"]
+
+    weighted_df = df.mul(weight_map)
+    return weighted_df
+
 
 def get_cosine_similarities(all_parks, target_park, limit: int = 5):
     
     df_rows = [vectorize_park(park) for park in all_parks]
+    df = pd.DataFrame(data=df_rows, index=[str(park.id) for park in all_parks])
 
-    print("DF ROWS", df_rows)
-    # df = pd.DataFrame(data=df_rows, index=[park.id for park in all_parks])
+    # Scale numerical columns for better comparison and apply feature weights    
+    scaled_df = scale_size_location(df)
+    weighted_scaled_df = apply_weights(scaled_df)
+    weighted_scaled_df.index = weighted_scaled_df.index.astype(str)
 
-    # scaled_df = scale_size_location(df)
+    target_park_row = weighted_scaled_df.loc[str(target_park.id)].values.reshape(1, -1)
+    similarity = cosine_similarity(X=weighted_scaled_df.values, Y=target_park_row).ravel()
 
-    # print(scaled_df)
+    result = pd.DataFrame({
+        "park_id": [str(p.id) for p in all_parks],
+        "similarity_score": similarity
+    }).sort_values("similarity_score", ascending=False).head(limit)
 
-
-
-
+    return result
 
