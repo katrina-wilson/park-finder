@@ -14,7 +14,7 @@ def get_similar_parks(park_id: UUID, limit: int, db: Session) -> List[ParkSimila
     if not target_park: 
         raise HTTPException(status_code=404, detail="Park not found")
 
-    all_parks = db.query(Park).all()
+    all_parks = db.query(Park).filter(Park.id != park_id).all()
     if not all_parks:
         return []
     
@@ -24,25 +24,18 @@ def get_similar_parks(park_id: UUID, limit: int, db: Session) -> List[ParkSimila
     similar_parks = db.query(Park).filter(Park.id.in_(similar_parks_ids)).all()
 
     id_to_park = {p.id: p for p in similar_parks}
-    
-    print("id to park", id_to_park)
-    print("similarity", similar_parks_df)
-
 
     result = []
     for id, val in id_to_park.items():
         park_col = similar_parks_df.loc[similar_parks_df["park_id"] == str(id)]
         park_similarity_score = float(park_col['similarity_score'].values[0])
 
-        print("PARK COLL sim\n", park_col)
-        print("similarity score\n", park_similarity_score)
-
         park_similarity = ParkSimilarityResponse.model_validate(val)
         park_similarity.similarity_score = park_similarity_score
 
-        print("PARK SIMILARITY\n", park_similarity)
-
         result.append(park_similarity)
+
+    
 
     return result
 

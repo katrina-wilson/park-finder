@@ -17,10 +17,14 @@ export const parksSlice = createSlice({
     name: 'parks',
     initialState: {
         parks: [],
+        mapCenter: null,
         status: 'idle',
         error: null,
     },
     reducers: {
+        setMapCenter: (state, action) => {
+            state.mapCenter = action.payload;
+        }
     },
     extraReducers: (builder) => {
 
@@ -40,4 +44,5 @@ export const parksSlice = createSlice({
     }
 });
 
+export const { setMapCenter } = parksSlice.actions;
 export default parksSlice.reducer;

@@ -94,10 +94,14 @@ def vectorize_park(park):
     return park_series
 
 
-def scale_size_location(df: pd.DataFrame):
-    scaler = MinMaxScaler()
-    df[["size_acres", "lat", "lon"]] = scaler.fit_transform(df[["size_acres", "lat", "lon"]])
-    return df
+def scale_size_location(df: pd.DataFrame, scaler: MinMaxScaler = None):
+    if scaler is None:
+        scaler = MinMaxScaler()
+        df[["size_acres", "lat", "lon"]] = scaler.fit_transform(df[["size_acres", "lat", "lon"]])
+        return df, scaler
+    else:
+        df[["size_acres", "lat", "lon"]] = scaler.transform(df[["size_acres", "lat", "lon"]])
+        return df
 
 
 def apply_weights(df: pd.DataFrame):
@@ -118,15 +122,24 @@ def apply_weights(df: pd.DataFrame):
 
 def get_cosine_similarities(all_parks, target_park, limit: int = 5):
     
-    df_rows = [vectorize_park(park) for park in all_parks]
-    df = pd.DataFrame(data=df_rows, index=[str(park.id) for park in all_parks])
+    series_rows = [vectorize_park(park) for park in all_parks]
+    series_target = [vectorize_park(target_park)]
 
-    # Scale numerical columns for better comparison and apply feature weights    
-    scaled_df = scale_size_location(df)
+    df = pd.DataFrame(data=series_rows, index=[str(park.id) for park in all_parks])
+    df_target = pd.DataFrame(data=series_target, index=[str(target_park.id)])
+
+    # Scale numerical columns for better comparison   
+    scaled_df, scaler = scale_size_location(df)
+    scaled_df_target = scale_size_location(df_target.copy(), scaler)
+
     weighted_scaled_df = apply_weights(scaled_df)
-    weighted_scaled_df.index = weighted_scaled_df.index.astype(str)
+    weighted_scaled_df_target = apply_weights(scaled_df_target)
 
-    target_park_row = weighted_scaled_df.loc[str(target_park.id)].values.reshape(1, -1)
+    weighted_scaled_df.index = weighted_scaled_df.index.astype(str)
+    weighted_scaled_df_target.index = weighted_scaled_df_target.index.astype(str)
+
+    target_park_row = weighted_scaled_df_target.loc[str(target_park.id)].values.reshape(1, -1)
+    
     similarity = cosine_similarity(X=weighted_scaled_df.values, Y=target_park_row).ravel()
 
     result = pd.DataFrame({
@@ -135,4 +148,3 @@ def get_cosine_similarities(all_parks, target_park, limit: int = 5):
     }).sort_values("similarity_score", ascending=False).head(limit)
 
     return result
-

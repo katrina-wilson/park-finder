@@ -1,9 +1,12 @@
+import * as React from 'react'; 
 import { Chip, IconButton } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Park } from "../types";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ParkDetails from './ParkDetails';
 import InfoIcon from '@mui/icons-material/Info';
+import { fetchSimilarParksApi } from "../api/parksApi";
+import ParkCard from './ParkCard';
 
 
 interface ParkDetailsProps {
@@ -13,6 +16,24 @@ interface ParkDetailsProps {
 
 function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
 
+    const [similarParks, setSimilarParks] = React.useState([]);
+
+    React.useEffect(() => {
+        
+        const fetchSimilarParks = async () => {
+            if (selectedPark) {
+                try {
+                    const r = await fetchSimilarParksApi(selectedPark.id, 5);
+                    setSimilarParks(r);
+                } catch (e) {
+                    console.error(e, "Failed to fetch similar parks.");
+                }
+            }
+        }
+
+        fetchSimilarParks();
+
+    }, [selectedPark]);
 
     return (
         <div className='tw:flex tw:flex-col tw:bg-white tw:h-full tw:w-full tw:shadow tw:p-4 tw:rounded-2xl tw:border tw:border-border'>
@@ -71,8 +92,8 @@ function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
                 )}
             </div>
             
-            <div className='tw:flex tw:flex-col tw:py-4'>
-                <div className='tw:flex tw:items-center tw:text-lg tw:font-bold'>
+            <div className='tw:flex tw:flex-col tw:py-4 tw:h-full tw:overflow-y-auto'>
+                <div className='tw:flex tw:items-center tw:text-lg tw:font-bold tw:pb-3'>
                     Parks you may also like:
                     
                     <div className='tw:w-fit tw:-mt-2.5'>
@@ -82,9 +103,21 @@ function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
                             </IconButton>
                         </Tooltip>
                     </div>
-                    
                 </div>
 
+                
+                <div className="tw:flex tw:flex-col tw:space-y-2 tw:overflow-y-auto tw:pr-4">
+                    {similarParks.map((p) => (
+                            <div>
+                                <ParkCard
+                                    key={p.id}
+                                    park={p}
+                                    handleCardClick={() => {}}
+                                />
+                            </div>
+                    ))}
+                </div>
+                
 
             </div>
         </div>

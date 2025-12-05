@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import { getParksCenter } from '../utils/coordinatesUtils';
 import { Park } from '../types';
 import { Button } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { setMapCenter } from "../stores/parksSlice";
 
 
 interface MapProps {
@@ -29,18 +31,26 @@ function ZoomToPark({ center, zoom }: ZoomToParkProps) {
 
 function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: MapProps) {
 
-  const [mapCenter, setMapCenter] = React.useState(null);
+  const dispatch = useDispatch();
+
+  const [localMapCenter, setLocalMapCenter] = React.useState(null);
+
+  const mapCenter = useSelector((state) => state.parks.mapCenter);
 
   React.useEffect(() => {
     if (allParks?.length > 0) {
-      const center = getParksCenter(allParks);
-      setMapCenter(center);
+      const center = mapCenter ?? getParksCenter(allParks);
+      
+      if (!mapCenter) {
+        dispatch(setMapCenter(center));
+      } 
+      setLocalMapCenter(center);
     }
-  }, [allParks]);
+  }, [allParks, dispatch, mapCenter]);
 
   const center = selectedPark
     ? [selectedPark.lat, selectedPark.lon] as [number, number]
-    : mapCenter;
+    : localMapCenter;
 
   if (!center) return null;
 
@@ -49,7 +59,7 @@ function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: Map
 
   return (
     <div className='tw:h-full tw:w-full tw:rounded-2xl tw:shadow tw:overflow-hidden tw:border tw:border-border'>
-      { mapCenter && 
+      { localMapCenter && 
         <MapContainer
           center={center}
           scrollWheelZoom={true}
