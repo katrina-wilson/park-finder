@@ -1,7 +1,7 @@
 @import url('https://unpkg.com/leaflet/dist/leaflet.css');
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif, "Playfair Display SC";
   line-height: 1.5;
   font-weight: 400;
 
@@ -13,6 +13,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.playfair-font {
+  font-family: "Playfair Display SC" !important; 
 }
 
 a {

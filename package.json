@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fontsource/playfair-display-sc": "^5.2.8",
     "axios": "^1.13.2",
     "camelcase-keys": "^10.0.1",
     "leaflet": "^1.9.4",

@@ -9,6 +9,9 @@ import "../index.css";
 import { createAppTheme } from "./assets/theme";
 import 'leaflet/dist/leaflet.css';
 
+import "@fontsource/playfair-display-sc/400.css";
+import "@fontsource/playfair-display-sc/400-italic.css";
+
 const theme = createAppTheme();
 
 createRoot(document.getElementById("root")!).render(

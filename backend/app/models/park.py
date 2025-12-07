@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Float
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 import uuid
-from app.models.base import Base
+from models.base import Base
 
 
 class Park(Base):
