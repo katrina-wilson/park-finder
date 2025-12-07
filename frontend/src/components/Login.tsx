@@ -103,7 +103,13 @@ function Login({ handleGoBack, handleLogin }: LoginProps) {
                 )}
 
                 {mode === "signup" && (
-                    <form onSubmit={handleCreateNewUser} className="tw-flex tw-flex-col tw-space-y-4 tw-w-80">
+                    <Box
+                        component='form'
+                        onSubmit={handleCreateNewUser}
+                        noValidate
+                        autoComplete="off"
+                        className="tw-flex tw-flex-col tw-space-y-4"
+                    >
 
                         <TextField
                             fullWidth
@@ -168,7 +174,7 @@ function Login({ handleGoBack, handleLogin }: LoginProps) {
                                 Login
                             </Link>
                         </div>
-                    </form>
+                    </Box>
                 )}
             </div>
         </div>
