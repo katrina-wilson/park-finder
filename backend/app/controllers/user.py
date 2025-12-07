@@ -46,9 +46,9 @@ def create_new_user(user: UserCreate, db: Session) -> UserCreateOut:
     db.commit()
     db.refresh(new_user)
 
-    token = create_access_token({"id": new_user.id})
+    token = create_access_token({"id": str(new_user.id)})
     return UserCreateOut(
-        id=new_user.id,
+        id=str(new_user.id),
         name=new_user.name,
         email=new_user.email,
         token=token

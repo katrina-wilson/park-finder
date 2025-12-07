@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.routers.parks import router as parks_router
+from app.routers.user import router as user_router
 
 def app_factory() -> FastAPI:
     app_settings = get_settings()
@@ -22,5 +23,6 @@ def app_factory() -> FastAPI:
     )
 
     app.include_router(parks_router)
+    app.include_router(user_router)
 
     return app

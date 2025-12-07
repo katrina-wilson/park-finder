@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     password: str
 
 class UserOut(BaseModel):
-    id: int
+    id: str
     name: str
     email: EmailStr
 
@@ -14,7 +14,7 @@ class UserOut(BaseModel):
         orm_mode = True
 
 class UserCreateOut(BaseModel):
-    id: int
+    id: str
     name: str
     email: EmailStr
     token: str

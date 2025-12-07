@@ -18,5 +18,4 @@ def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
     if is_existing:
         raise HTTPException(status_code=400, detail="Email already exists")
     
-    user = user_controller.create_new_user(user)
-    return
+    return user_controller.create_new_user(user, db)
