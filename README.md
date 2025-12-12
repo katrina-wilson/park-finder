@@ -6,7 +6,6 @@ Triangle Park Finder is an interactive web application for discovering parks in 
 
 This weighting ensures the app suggests parks that are geographically close, similar in size, have comparable trail lengths, and share amenities or park types.
 
----
 
 ## 🔧 Built With
 
