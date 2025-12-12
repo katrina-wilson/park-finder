@@ -25,7 +25,7 @@ function ParkFilterDropdown({ anchorEl, open, handleClose }: ParkFilterDropdownP
         className="tw:mt-1 tw:rounded-2xl"
     >
         <div className="tw:p-4 tw:rounded-2xl">
-            Filters here
+            Filters coming soon
         </div>
     </Popover>
   );

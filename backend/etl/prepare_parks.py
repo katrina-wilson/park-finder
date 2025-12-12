@@ -144,13 +144,5 @@ def prepare_data():
     all_gdf.to_parquet("data/cleaned/parks.parquet", index=False)
 
 
-    # TEST read parquet
-    # p = gpd.read_parquet("data/cleaned/parks.parquet")
-    # print(p.head())
-    # print(p.columns)
-    # print(p.crs)          # check coordinate reference system
-    # print(p.geometry.head())  # view geometries
-
-
 if __name__ == "__main__":
     prepare_data()
