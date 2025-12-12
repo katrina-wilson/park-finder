@@ -3,22 +3,24 @@ import {
   Box,
   Button,
   TextField,
-  Typography,
   Link,
-  Paper,
   Divider
 } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { createNewUserApi } from '../api/authApi';
+import { useDispatch } from "react-redux";
+import { loginUser, createNewUser } from "../stores/authSlice";
 
 
 interface LoginProps {
+    isLanding?: boolean,
     handleGoBack: () => void;
-    handleLogin: (token: string) => void;
+    handleLogin: () => void;
 };
 
 
-function Login({ handleGoBack, handleLogin }: LoginProps) {
+function Login({ isLanding = true, handleGoBack, handleLogin }: LoginProps) {
+
+    const dispatch = useDispatch();
     const [mode, setMode] = useState<"login" | "signup">("login");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -35,39 +37,75 @@ function Login({ handleGoBack, handleLogin }: LoginProps) {
 
         try {
             const user = { name, email, password };
-            const result = await createNewUserApi(user);
-            localStorage.setItem("token", result.token);
-            setError(null);
-            handleLogin(result.token);
+            const result = await dispatch(createNewUser(user));
+            if (createNewUser.fulfilled.match(result)) {
+                setError(null);
+                handleLogin();
+            } else {
+                setError(result.payload?.detail || "Login failed");
+            }
         } catch (e) {
             setError(e.response?.data?.detail || "Failed to create account.");
             console.error("Failed to create account.");
         }
     };
 
-    return (
-        <div className="tw:max-w-xl tw:p-6">
+    const handleLoginAttempt = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-            <Button
-                startIcon={<ArrowBackIcon/>}
-                onClick={handleGoBack}
+        try {
+            const user = { email, password };
+            const result = await dispatch(loginUser(user));
+            if (loginUser.fulfilled.match(result)) {
+                console.log("in fulfilled")
+                setError(null);
+                handleLogin();
+            } else {
+                setError(result.payload?.detail || "Login failed");
+            }
+        } catch (e) {
+            setError(e.response?.data?.detail || "Incorrect email or password.");
+            console.error("Incorrect email or password.");
+        }
+    }
+
+    return (
+        <div className="tw:max-w-xl tw:p-4">
+
+            <div
+                className={!isLanding ? 'tw:w-full tw:flex tw:justify-end' : ''}
             >
-                Go Back
-            </Button>
+                <Button
+                    startIcon={isLanding && <ArrowBackIcon/>}
+                    onClick={handleGoBack}
+                    
+                >
+                    {isLanding ? 'Go Back' : 'Cancel'}
+                </Button>
+            </div>
+
 
             <div className="tw:p-10">
-                <div className="tw:text-center tw:text-3xl tw:font-bold tw:pb-6 tw:uppercase playfair-font" style={{ fontFamily: 'Playfair Display SC'}}>
+                <div className="tw:text-center tw:text-3xl tw:font-bold tw:pb-6 tw:uppercase">
                     {mode === "login" ? "Login" : "Create Account"}
                 </div>
 
                 {mode === "login" && (
-                    <Box component="form" noValidate autoComplete="off">
+                    <Box 
+                        component="form" 
+                        noValidate 
+                        autoComplete="off" 
+                        onSubmit={handleLoginAttempt}
+                        className="tw-flex tw-flex-col tw-space-y-4"
+                    >
                         <TextField
                             fullWidth
                             label="Email"
                             variant="outlined"
                             margin="normal"
                             type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <TextField
                             fullWidth
@@ -75,10 +113,14 @@ function Login({ handleGoBack, handleLogin }: LoginProps) {
                             variant="outlined"
                             margin="normal"
                             type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
 
+                        {error && <div className="tw:text-red-800">{error}</div>}
                         <Button
                             fullWidth
+                            type="submit"
                             variant="contained"
                             size="large"
                             className='tw:h-12 tw:mt-4'
@@ -151,7 +193,7 @@ function Login({ handleGoBack, handleLogin }: LoginProps) {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
 
-                        {error && <div className="tw-text-red-500">{error}</div>}
+                        {error && <div className="tw:text-red-800">{error}</div>}
                         <Button
                             fullWidth
                             type="submit"

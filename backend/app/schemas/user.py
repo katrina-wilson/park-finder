@@ -5,6 +5,10 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 class UserOut(BaseModel):
     id: str
     name: str
@@ -13,7 +17,7 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
-class UserCreateOut(BaseModel):
+class UserCreateLoginOut(BaseModel):
     id: str
     name: str
     email: EmailStr
@@ -21,7 +25,3 @@ class UserCreateOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-class LoginSchema(BaseModel):
-    email: EmailStr
-    password: str

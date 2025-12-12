@@ -35,9 +35,9 @@ function Home() {
 
     return (
         <>
-            {/* <WelcomeModal
+            <WelcomeModal
                 allParks={parks}
-            /> */}
+            />
 
             <div className='tw:flex tw:md:flex-row tw:flex-col tw:p-6 tw:w-full tw:h-full tw:bg-background tw:space-x-6'>
 

@@ -24,8 +24,6 @@ const componentMap = {
 
 function WelcomeModal({ allParks }: WelcomeModalProps) {
 
-    console.log("all parks", allParks)
-
     const [open, setOpen] = React.useState(true);
     const [activeComponent, setActiveComponent] = React.useState<'welcome' | 'findParkStepper'>("welcome");
 
@@ -35,7 +33,6 @@ function WelcomeModal({ allParks }: WelcomeModalProps) {
     const handleClose = () => setOpen(false);
 
     function handleButtonClick(buttonType: string) {
-        console.log("in fun", buttonType)
         switch (buttonType) {
             case 'close':
                 handleClose();

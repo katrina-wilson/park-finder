@@ -1,7 +1,7 @@
 from typing import List
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.schemas.user import UserOut, UserCreate, UserCreateOut
+from app.schemas.user import UserOut, UserCreate, UserCreateLoginOut, UserLogin
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from pwdlib import PasswordHash
@@ -39,7 +39,7 @@ def get_all_users(db: Session) -> List[UserOut]:
     return db.query(User).all()
 
 
-def create_new_user(user: UserCreate, db: Session) -> UserCreateOut:
+def create_new_user(user: UserCreate, db: Session) -> UserCreateLoginOut:
     hashed_password = get_password_hash(user.password)
     new_user = User(name=user.name, email=user.email, password_hash=hashed_password)
     db.add(new_user)
@@ -47,9 +47,30 @@ def create_new_user(user: UserCreate, db: Session) -> UserCreateOut:
     db.refresh(new_user)
 
     token = create_access_token({"id": str(new_user.id)})
-    return UserCreateOut(
+    return UserCreateLoginOut(
         id=str(new_user.id),
         name=new_user.name,
         email=new_user.email,
+        token=token
+    )
+
+
+def login_user(user: UserLogin, db: Session) -> UserCreateLoginOut:
+    found_user = db.query(User).filter(User.email == user.email).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    
+    if not verify_password(user.password, found_user.password_hash):
+        raise ValueError("Incorrect email or password") 
+    
+    token = create_access_token(
+        {"id": str(found_user.id)},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+
+    return UserCreateLoginOut(
+        id=str(found_user.id),
+        name=found_user.name,
+        email=found_user.email,
         token=token
     )

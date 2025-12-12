@@ -10,10 +10,8 @@ function Landing() {
 
     const [isLogin, setIsLogin] = React.useState(false);
 
-    const handleLogin = (token: string) => {
-        console.log("Registered! Token:", token);
+    const handleLogin = () => {
         setIsLogin(false);
-
         navigate('/home');
     };
 
@@ -29,7 +27,7 @@ function Landing() {
             <div className='tw:flex tw:flex-col tw:items-center tw:justify-center tw:w-fit tw:h-fit tw:bg-white tw:rounded-2xl tw:shadow-2xl'>
                 {!isLogin ? (
                     <div className='tw:max-w-2xl tw:p-16 tw:flex tw:flex-col tw:items-center'>
-                        <div className='tw:text-3xl tw:font-bold tw:pb-6 playfair-font tw:uppercase' style={{ fontFamily: 'Playfair Display SC'}}>
+                        <div className='tw:text-3xl tw:font-bold tw:pb-6 tw:uppercase'>
                             Welcome to Triangle Trails!
                         </div>
                         <div className='tw:text-sm tw:text-gray-600 tw:italic tw:text-center'>
