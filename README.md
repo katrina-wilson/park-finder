@@ -2,7 +2,7 @@
 
 > ⚠️ This project is still a work in progress — more datasets, features, and map interactions will be added over time.
 
-ParkFinder is an interactive web application for discovering parks in Raleigh, Durham, and Wake County. Users can explore parks on a dynamic Leaflet map and view key information such as park type, size, and amenities. The application also recommends similar parks using **cosine similarity**, with features weighted to prioritize key attributes: location (latitude and longitude) contributes 4.8%, park size and trail length contribute 11.9% each, amenities have the highest impact at 47.6%, and park type contributes 23.8%.
+Triangle Park Finder is an interactive web application for discovering parks in Raleigh, Durham, and Wake County. Users can explore parks on a dynamic Leaflet map and view key information such as park type, size, and amenities. The application also recommends similar parks using **cosine similarity**, with features weighted to prioritize key attributes: location (latitude and longitude) contributes 4.8%, park size and trail length contribute 11.9% each, amenities have the highest impact at 47.6%, and park type contributes 23.8%.
 
 This weighting ensures the app suggests parks that are geographically close, similar in size, have comparable trail lengths, and share amenities or park types.
 
