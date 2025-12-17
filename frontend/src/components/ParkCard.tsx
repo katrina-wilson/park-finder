@@ -1,10 +1,12 @@
-import { CardActionArea, CardActions, CardContent } from "@mui/material";
+import { CardActionArea, CardActions, CardContent, Rating } from "@mui/material";
 import Card from "@mui/material/Card";
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Tooltip from '@mui/material/Tooltip';
 import { Park } from '../types';
+import { useSelector } from "react-redux";
+
 
 interface ParkCardProps {
   park: Park;
@@ -14,6 +16,8 @@ interface ParkCardProps {
 
 
 function ParkCard({ park, handleCardClick }: ParkCardProps) {
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     return (
         <>
@@ -28,6 +32,14 @@ function ParkCard({ park, handleCardClick }: ParkCardProps) {
                         <div className="tw:text-xl tw:font-bold">
                             {park?.name}
                         </div>
+                        <Rating
+                            name="simple-uncontrolled"
+                            onChange={(event, newValue) => {
+                                console.log(newValue);
+                            }}
+                            defaultValue={0}
+                            disabled={!currentUser}
+                        />
                         <div className="tw:italic tw:text-gray-600 tw:pt-1">
                             {park.address}
                         </div>

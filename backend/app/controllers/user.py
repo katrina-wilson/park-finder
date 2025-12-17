@@ -1,11 +1,14 @@
 from typing import List
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
+from app.db import get_db
 from app.models.user import User
 from app.schemas.user import UserOut, UserCreate, UserCreateLoginOut, UserLogin
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
+
 
 SECRET_KEY = "d2ce1a0050768b6bbe1447f06ae482b6c42b1c2ccdfa547302b542041f021e88"
 ALGORITHM = "HS256"
@@ -29,6 +32,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+    if "id" in to_encode:
+        to_encode["sub"] = str(to_encode["id"])
+
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -37,6 +44,30 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # Controllers
 def get_all_users(db: Session) -> List[UserOut]:
     return db.query(User).all()
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authentication credentials",
+            )
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication credentials",
+        )
+
+    user = db.query(User).filter(User.id == str(user_id)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserOut(
+        id=str(user.id),
+        name=user.name,
+        email=user.email
+    )
 
 
 def create_new_user(user: UserCreate, db: Session) -> UserCreateLoginOut:
@@ -57,7 +88,7 @@ def create_new_user(user: UserCreate, db: Session) -> UserCreateLoginOut:
 
 def login_user(user: UserLogin, db: Session) -> UserCreateLoginOut:
     found_user = db.query(User).filter(User.email == user.email).first()
-    if not user:
+    if not found_user:
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
     
     if not verify_password(user.password, found_user.password_hash):

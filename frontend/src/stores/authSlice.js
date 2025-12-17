@@ -1,5 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createNewUserApi, loginUserApi } from "../api/authApi";
+import { createNewUserApi, loginUserApi, fetchCurrentLoggedInUser } from "../api/authApi";
+
+export const fetchCurrentUser = createAsyncThunk(
+    'users/current',
+    async (_, { rejectWithValue }) => {
+        const token = localStorage.getItem("token");
+        if (!token) return rejectWithValue("No token");
+
+        try {
+            const data = await fetchCurrentLoggedInUser(token);
+            return data;
+        } catch (err) {
+            return rejectWithValue("Failed to fetch user");
+        }
+    }
+);
 
 export const createNewUser = createAsyncThunk(
     'users/create',
@@ -37,20 +52,42 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState: {
         currentUser: null,
+        token: localStorage.getItem("token") || null,
         status: 'idle',
         error: null,
     },
     reducers: {
         setCurrentUser: (state, action) => {
             state.currentUser = action.payload;
+            state.token = action.payload.token || state.token;
         },
         clearCurrentUser: (state) => {
             state.currentUser = null;
+            state.token = null;
+            localStorage.removeItem("token");
         }
     },
     extraReducers: (builder) => {
         builder
-        
+            // current user
+            .addCase(fetchCurrentUser.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
+            .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+                state.status = "idle";
+                state.currentUser = action.payload.user ?? action.payload;
+                if (action.payload?.token) {
+                    state.token = action.payload.token;
+                }
+            })
+            .addCase(fetchCurrentUser.rejected, (state, action) => {
+                state.status = "failed";
+                state.currentUser = null;
+                state.token = null;
+                state.error = action.payload;
+            })
+
             // login
             .addCase(loginUser.pending, (state) => {
                 state.status = "loading";
@@ -60,7 +97,6 @@ export const authSlice = createSlice({
                 state.status = "idle";
                 state.currentUser = action.payload;
                 if (action.payload?.token) {
-                    console.log("to", action.payload.token);
                     localStorage.setItem("token", action.payload.token);
                 }
             })

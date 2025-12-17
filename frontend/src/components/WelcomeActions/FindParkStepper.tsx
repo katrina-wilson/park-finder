@@ -16,7 +16,6 @@ const steps = ['Pick a Location', 'Choose Amenities', 'Type & Size'];
 
 function FindParkStepper({ allParks }: FindParkStepperProps) {
 
-    console.log("in stepper", allParks)
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
 

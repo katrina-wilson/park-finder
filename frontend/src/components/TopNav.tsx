@@ -1,16 +1,21 @@
 import * as React from 'react';
-import { Avatar, Button, Dialog, Menu, MenuItem } from "@mui/material";
+import { Avatar, Button, Dialog, Menu, MenuItem, Skeleton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import Login from './Login';
 import { clearCurrentUser } from "../stores/authSlice";
+import { useToast } from '../contexts/ToastContext';
 
 
 function TopNav() {
 
   const dispatch = useDispatch();
+  const { addToast } = useToast();
 
-  const currentUser = useSelector((state) => state.auth.currentUser);
+  // const { currentUser, currentUserStatus } = useSelector((state) => state.auth.currentUser);
+  const { currentUser, status } = useSelector(
+    (state) => state.auth ?? { currentUser: null, status: "idle" }
+  );
+
 
   const [openLogin, setOpenLogin] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -29,6 +34,12 @@ function TopNav() {
     dispatch(clearCurrentUser());
     handleClose();
     localStorage.removeItem("token");
+
+    addToast({
+      message: 'Successfully logged out!',
+      severity: 'success',
+      duration: 4000,
+    });
   };
 
   return (
@@ -62,45 +73,50 @@ function TopNav() {
         </div>
 
         <div>
-          {currentUser ? (
-            <>
-              <Avatar
-                alt={currentUser.name}
-                onClick={handleAvatarClick}
-                className="tw:cursor-pointer"
-              >
-                {currentUser.name[0].toUpperCase()}
-              </Avatar>
+          {status === 'loading' ? (
+              <Skeleton variant="circular" width={40} height={40} />
+            ) : (
+              currentUser ? (
+                <>
+                  <Avatar
+                    alt={currentUser.name}
+                    onClick={handleAvatarClick}
+                    className="tw:cursor-pointer"
+                  >
+                    {currentUser.name[0].toUpperCase()}
+                  </Avatar>
 
-              <Menu
-                anchorEl={anchorEl}
-                open={userSettingsOpen}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                <MenuItem 
-                  onClick={handleLogout}
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={userSettingsOpen}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                  >
+                    <MenuItem 
+                      onClick={handleLogout}
+                    >
+                      Logout
+                      </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <Button 
+                  variant='outlined'
+                  color='inherit'
+                  onClick={() => setOpenLogin(true)}
                 >
-                  Logout
-                  </MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <Button 
-              variant='outlined'
-              color='inherit'
-              onClick={() => setOpenLogin(true)}
-            >
-              Login
-            </Button>
-          )}
+                  Login
+                </Button>
+              )
+            )
+          }
         </div>
       </div>
     </>

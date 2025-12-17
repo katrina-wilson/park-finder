@@ -9,7 +9,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useDispatch } from "react-redux";
 import { loginUser, createNewUser } from "../stores/authSlice";
-
+import { useToast } from '../contexts/ToastContext';
 
 interface LoginProps {
     isLanding?: boolean,
@@ -21,6 +21,8 @@ interface LoginProps {
 function Login({ isLanding = true, handleGoBack, handleLogin }: LoginProps) {
 
     const dispatch = useDispatch();
+    const { addToast } = useToast();
+    
     const [mode, setMode] = useState<"login" | "signup">("login");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -57,9 +59,13 @@ function Login({ isLanding = true, handleGoBack, handleLogin }: LoginProps) {
             const user = { email, password };
             const result = await dispatch(loginUser(user));
             if (loginUser.fulfilled.match(result)) {
-                console.log("in fulfilled")
                 setError(null);
                 handleLogin();
+                addToast({
+                    message: 'Successfully logged in!',
+                    severity: 'success',
+                    duration: 4000,
+                });
             } else {
                 setError(result.payload?.detail || "Login failed");
             }

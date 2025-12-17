@@ -26,7 +26,7 @@ function Home() {
     }, [parks]);
 
     React.useEffect(() => {
-        const filtered = parks.filter((p) =>
+        const filtered = parks?.filter((p) =>
             p.name.toLowerCase().includes(searchValue.toLowerCase())
         );
         setSearchFilterParks(filtered);
