@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String
 from app.models.base import Base
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 import uuid
 
 class User(Base):
@@ -10,3 +11,9 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)
+
+    visited_parks = relationship(
+        "VisitedPark",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

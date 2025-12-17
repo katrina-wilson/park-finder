@@ -29,17 +29,20 @@ function ParkCard({ park, handleCardClick }: ParkCardProps) {
                     onClick={() => handleCardClick?.(park)}
                 >
                     <CardContent>
-                        <div className="tw:text-xl tw:font-bold">
-                            {park?.name}
+                        <div className="tw:flex tw:w-full tw:items-center">
+                            <div className="tw:text-xl tw:w-full tw:font-bold">
+                                {park?.name}
+                            </div>
+                            <Rating
+                                name="simple-uncontrolled"
+                                onChange={(event, newValue) => {
+                                    console.log(newValue);
+                                }}
+                                defaultValue={0}
+                                disabled={!currentUser}
+                            />
                         </div>
-                        <Rating
-                            name="simple-uncontrolled"
-                            onChange={(event, newValue) => {
-                                console.log(newValue);
-                            }}
-                            defaultValue={0}
-                            disabled={!currentUser}
-                        />
+
                         <div className="tw:italic tw:text-gray-600 tw:pt-1">
                             {park.address}
                         </div>

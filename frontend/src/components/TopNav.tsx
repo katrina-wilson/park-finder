@@ -73,7 +73,7 @@ function TopNav() {
         </div>
 
         <div>
-          {status === 'loading' ? (
+          {false ? (
               <Skeleton variant="circular" width={40} height={40} />
             ) : (
               currentUser ? (

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Float
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 import uuid
+from sqlalchemy.orm import relationship
 from app.models.base import Base
 
 
@@ -16,3 +17,9 @@ class Park(Base):
     website = Column(String, nullable=True)
     size_acres = Column(Float, nullable=True)
     amenities = Column(ARRAY(String), default=list)
+
+    visited_by = relationship(
+        "VisitedPark",
+        back_populates="park",
+        cascade="all, delete-orphan"
+    )

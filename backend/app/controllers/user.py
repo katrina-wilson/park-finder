@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models.user import User
 from app.schemas.user import UserOut, UserCreate, UserCreateLoginOut, UserLogin
-from fastapi.security import OAuth2PasswordBearer
+from app.dependencies.auth import oauth2_scheme
 import jwt
 from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
@@ -15,7 +15,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pw_hash = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Helpers
 def verify_password(plain_password, hashed_password):
@@ -44,6 +43,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # Controllers
 def get_all_users(db: Session) -> List[UserOut]:
     return db.query(User).all()
+
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     try:
@@ -86,22 +86,13 @@ def create_new_user(user: UserCreate, db: Session) -> UserCreateLoginOut:
     )
 
 
-def login_user(user: UserLogin, db: Session) -> UserCreateLoginOut:
-    found_user = db.query(User).filter(User.email == user.email).first()
-    if not found_user:
+def login_user(db: Session, email: str, password: str):
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
-    
-    if not verify_password(user.password, found_user.password_hash):
-        raise ValueError("Incorrect email or password") 
-    
+
     token = create_access_token(
-        {"id": str(found_user.id)},
+        {"sub": str(user.id)}, 
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-
-    return UserCreateLoginOut(
-        id=str(found_user.id),
-        name=found_user.name,
-        email=found_user.email,
-        token=token
-    )
+    return {"access_token": token, "token_type": "bearer"}

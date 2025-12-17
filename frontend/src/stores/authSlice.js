@@ -33,7 +33,7 @@ export const createNewUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk(
-    'users/login',
+    'auth/token',
     async (userData, { rejectWithValue }) => {
         try {
             const user = await loginUserApi(userData);
