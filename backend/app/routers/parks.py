@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.schemas.park import ParkBase, ParkSimilarityResponse
+from app.schemas.park import ParkBase, ParkSimilarityResponse, ParkUserInfoOut
 from app.controllers import park as park_controller
 from app.db import get_db
 from typing import List
@@ -13,6 +13,11 @@ router = APIRouter(prefix="/parks", tags=["parks"])
 @router.get("/", response_model=List[ParkBase])
 def get_all_parks(db: Session = Depends(get_db)):
     return park_controller.get_all_parks(db)
+
+
+@router.get("/with-user-info/{user_id}", response_model=List[ParkUserInfoOut])
+def get_all_parks_with_user_info(user_id: UUID, db: Session = Depends(get_db)):
+    return park_controller.get_all_parks_with_user_info(user_id, db)
 
 
 @router.get("/{park_id}/similar", response_model=List[ParkSimilarityResponse])

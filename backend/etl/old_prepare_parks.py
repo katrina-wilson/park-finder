@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 import geopandas as gpd
 from sklearn.metrics.pairwise import cosine_similarity
-import json
+
 
 OUT_GEOJSON = "backend/data/cleaned/parks_cleaned.geojson"
 OUT_CSV = "backend/data/cleaned/parks_cleaned.csv"

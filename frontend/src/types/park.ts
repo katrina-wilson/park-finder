@@ -8,4 +8,9 @@ export interface Park {
   sizeAcres?: number;
   hasPlayground?: boolean;
   amenities: string[];
+
+  visitedAt?: string;
+  rating?: number;
+  review?: string;
+  updatedAt?: string;
 }

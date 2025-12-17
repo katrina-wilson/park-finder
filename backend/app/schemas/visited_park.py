@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
+
 
 class VisitedParkCreate(BaseModel):
     park_id: str
@@ -12,8 +14,8 @@ class VisitedParkUpdate(BaseModel):
     review: Optional[str]
 
 class VisitedParkOut(BaseModel):
-    id: str
-    park_id: str
+    id: UUID
+    park_id: UUID
     rating: Optional[int]
     review: Optional[str]
     visited_at: datetime

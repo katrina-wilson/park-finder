@@ -82,7 +82,7 @@ function ParkColumn({ searchValue, setSearchValue, searchFilterParks, selectedPa
                         </span>
                     </div>
 
-                    <div className='tw:space-y-3 tw:h-full tw:w-full tw:overflow-y-auto tw:pr-2'>
+                    <div className='tw:space-y-3 tw:h-full tw:w-full tw:overflow-y-auto tw:pr-4'>
                         {searchFilterParks.map((p) => (
                             <div key={p?.id}>
                                 <ParkCard 

@@ -1,5 +1,5 @@
 import * as React from 'react'; 
-import { Chip, IconButton } from '@mui/material';
+import { Button, Chip, IconButton } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Park } from "../types";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -38,7 +38,7 @@ function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
     return (
         <div className='tw:flex tw:flex-col tw:bg-white tw:h-full tw:w-full tw:shadow tw:p-4 tw:rounded-2xl tw:border tw:border-border'>
             <div className='tw:flex tw:items-center tw:border-b tw:border-border'>
-                <div className='tw:pr-3'>
+                <div className='tw:pr-2'>
                     <Tooltip title="Back to all parks">
                         <IconButton
                             aria-label='Back to all parks'
@@ -48,20 +48,46 @@ function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
                         </IconButton>
                     </Tooltip>
                 </div>
-                <div className='tw:text-xl tw:font-bold'>
+                <div className='tw:text-xl tw:font-bold tw:w-full'>
                     {selectedPark?.name}
                 </div>
+
+                {selectedPark?.visitedAt ? (
+                    <Tooltip title="Personal Rating">
+                        <Chip 
+                            label={`Visited ${selectedPark?.rating ? (" | ★  ") + selectedPark?.rating : "–"}`}
+                            color="success" 
+                            size="small"
+                            className="tw:min-w-fit tw:self-center tw:rounded tw:text-sm"
+                        />
+                    </Tooltip>
+                ) : (
+                    <div className='tw:min-w-fit'>
+                        <Button
+                            variant='outlined'
+                        >
+                            Mark as Visited
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <div className='tw:flex tw:flex-col tw:space-y-2 tw:h-fit tw:border-b tw:border-border tw:py-4'>
-                { selectedPark?.type && (
-                    <div className='tw:py-3 tw:w-full tw:flex'>
-                        <Chip label={selectedPark.type}/>
+                {/* { selectedPark?.type && (
+                    <div>
+                        <span className='tw:font-bold'>Type: </span>
+                        <span className='tw-font-semibold tw-text-gray-700'>{ selectedPark?.type }</span>
+                    </div>
+                )} */}
+
+                { selectedPark?.description && (
+                    <div className='tw:text-gray-700 tw:whitespace-pre-wrap'>
+                        { selectedPark?.description }
                     </div>
                 )}
 
                 <div className='tw:flex'>
-                    Website: 
+                    <span className='tw:font-bold'>Website: </span>
                     <Tooltip title="Open in new tab" >
                         <a 
                             href={selectedPark.website}
@@ -74,11 +100,11 @@ function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
                 </div>
 
                 <div>
-                    Address: { selectedPark?.address ? selectedPark?.address : 'Unknown' }
+                    <span className='tw:font-bold'>Address:</span> { selectedPark?.address ? selectedPark?.address : 'Unknown' }
                 </div>
 
                 <div>
-                    Size: { selectedPark?.sizeAcres ? selectedPark?.sizeAcres?.toFixed(1) + ' acres' : 'Unknown' }
+                    <span className='tw:font-bold'>Size:</span> { selectedPark?.sizeAcres ? selectedPark?.sizeAcres?.toFixed(1) + ' acres' : 'Unknown' }
                 </div>
 
                 { !!selectedPark?.amenities?.length && (

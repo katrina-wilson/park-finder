@@ -1,13 +1,35 @@
 from typing import List
 from sqlalchemy.orm import Session
 from app.models.park import Park
-from app.schemas.park import ParkBase, ParkSimilarityResponse
+from app.models.visited_park import VisitedPark
+from app.schemas.park import ParkBase, ParkSimilarityResponse, ParkUserInfoOut
 from fastapi import HTTPException
 from app.utils.similarity import get_cosine_similarities
 from uuid import UUID
 
 def get_all_parks(db: Session) -> List[ParkBase]:
     return db.query(Park).all()
+
+
+def get_all_parks_with_user_info(user_id: UUID, db: Session) -> List[ParkUserInfoOut]:
+    parks = db.query(Park).all()
+    
+    visited_parks = db.query(VisitedPark).filter(VisitedPark.user_id == user_id).all()
+    visited_parks_dict = {vp.park_id: vp for vp in visited_parks}
+
+    result = []
+    for park in parks:
+        park_out = ParkUserInfoOut.model_validate(park)
+        vp = visited_parks_dict.get(park.id)
+        
+        park_out.visited_at = getattr(vp, "visited_at", None)
+        park_out.updated_at = getattr(vp, "updated_at", None)
+        park_out.rating = getattr(vp, "rating", None)
+        park_out.review = getattr(vp, "review", None)
+
+        result.append(park_out)
+
+    return result
 
 def get_similar_parks(park_id: UUID, limit: int, db: Session) -> List[ParkSimilarityResponse]:
     target_park = db.query(Park).filter(Park.id == park_id).first()

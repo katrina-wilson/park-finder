@@ -3,8 +3,8 @@ from app.models.visited_park import VisitedPark
 
 def mark_park_visited(
     db: Session,
-    user_id: int,
-    park_id: int,
+    user_id: str,
+    park_id: str,
     rating: int | None = None,
     review: str | None = None,
 ):

@@ -10,6 +10,8 @@ class Park(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
+    cover_image = Column(String, nullable=True)
+    description = Column(String, nullable=True)
     type = Column(String, nullable=True)
     address = Column(String, nullable=True)
     lat = Column(Float, nullable=True)
