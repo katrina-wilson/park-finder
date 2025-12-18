@@ -3,6 +3,7 @@ import Layout from "./layouts/Layout";
 import BaseLayout from './layouts/BaseLayout';
 import Home from "./views/Home";
 import Landing from "./views/Landing";
+import ParkDetailsView from "./views/ParkDetailsView";
 
 export const router = createBrowserRouter([
   {
@@ -16,7 +17,14 @@ export const router = createBrowserRouter([
     path: "/home",
     element: <Layout />,
     children: [
-      { index: true, element: <Home /> },
+      { 
+        index: true, 
+        element: <Home /> 
+      },
+      {
+        path: "parks/:parkId",
+        element: <ParkDetailsView />
+      }
     ],
   }
 ]);

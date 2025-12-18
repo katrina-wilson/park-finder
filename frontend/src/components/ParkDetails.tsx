@@ -1,12 +1,7 @@
 import * as React from 'react'; 
-import { Button, Chip, IconButton } from '@mui/material';
+import { Box, Chip, Tab, Tabs } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Park } from "../types";
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ParkDetails from './ParkDetails';
-import InfoIcon from '@mui/icons-material/Info';
-import { fetchSimilarParksApi } from "../api/parksApi";
-import ParkCard from './ParkCard';
 
 
 interface ParkDetailsProps {
@@ -14,141 +9,106 @@ interface ParkDetailsProps {
     setSelectedPark: (park: Park | null) => void;
 };
 
-function ParkDetails({ selectedPark, setSelectedPark }: ParkDetailsProps) {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+};
 
-    const [similarParks, setSimilarParks] = React.useState([]);
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+};
 
-    React.useEffect(() => {
-        
-        const fetchSimilarParks = async () => {
-            if (selectedPark) {
-                try {
-                    const r = await fetchSimilarParksApi(selectedPark.id, 5);
-                    setSimilarParks(r);
-                } catch (e) {
-                    console.error(e, "Failed to fetch similar parks.");
-                }
-            }
-        }
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
 
-        fetchSimilarParks();
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
+    </div>
+  );
+};
 
-    }, [selectedPark]);
+function ParkDetails({ selectedPark }: ParkDetailsProps) {
+
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
 
     return (
         <div className='tw:flex tw:flex-col tw:bg-white tw:h-full tw:w-full tw:shadow tw:p-4 tw:rounded-2xl tw:border tw:border-border'>
-            <div className='tw:flex tw:items-center tw:border-b tw:border-border'>
-                <div className='tw:pr-2'>
-                    <Tooltip title="Back to all parks">
-                        <IconButton
-                            aria-label='Back to all parks'
-                            onClick={() => setSelectedPark(null)}
-                        >
-                            <ChevronLeftIcon/>
-                        </IconButton>
-                    </Tooltip>
-                </div>
-                <div className='tw:text-xl tw:font-bold tw:w-full'>
-                    {selectedPark?.name}
-                </div>
 
-                {selectedPark?.visitedAt ? (
-                    <Tooltip title="Personal Rating">
-                        <Chip 
-                            label={`Visited ${selectedPark?.rating ? (" | ★  ") + selectedPark?.rating : "–"}`}
-                            color="success" 
-                            size="small"
-                            className="tw:min-w-fit tw:self-center tw:rounded tw:text-sm"
-                        />
-                    </Tooltip>
-                ) : (
-                    <div className='tw:min-w-fit'>
-                        <Button
-                            variant='outlined'
-                        >
-                            Mark as Visited
-                        </Button>
-                    </div>
-                )}
-            </div>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                    <Tab label="Park Details" {...a11yProps(0)} />
+                    <Tab label="Reviews" {...a11yProps(1)} />
+                </Tabs>
+            </Box>
 
-            <div className='tw:flex tw:flex-col tw:space-y-2 tw:h-fit tw:border-b tw:border-border tw:py-4'>
-                {/* { selectedPark?.type && (
-                    <div>
-                        <span className='tw:font-bold'>Type: </span>
-                        <span className='tw-font-semibold tw-text-gray-700'>{ selectedPark?.type }</span>
-                    </div>
-                )} */}
+            <CustomTabPanel value={value} index={0}>
+                <div className='tw:flex tw:flex-col tw:space-y-2 tw:h-fit'>
 
-                { selectedPark?.description && (
-                    <div className='tw:text-gray-700 tw:whitespace-pre-wrap'>
-                        { selectedPark?.description }
-                    </div>
-                )}
+                    { selectedPark?.description && (
+                        <div className='tw:text-gray-700 tw:whitespace-pre-wrap'>
+                            { selectedPark?.description }
+                        </div>
+                    )}
 
-                <div className='tw:flex'>
-                    <span className='tw:font-bold'>Website: </span>
-                    <Tooltip title="Open in new tab" >
-                        <a 
-                            href={selectedPark.website}
-                            target="_blank"
-                            className='tw:pl-2 tw:underline tw:text-gray-600 tw:hover:text-primary tw:break-all'
-                        >
-                            { selectedPark?.website || 'Unknown' }
-                        </a>
-                    </Tooltip>
-                </div>
-
-                <div>
-                    <span className='tw:font-bold'>Address:</span> { selectedPark?.address ? selectedPark?.address : 'Unknown' }
-                </div>
-
-                <div>
-                    <span className='tw:font-bold'>Size:</span> { selectedPark?.sizeAcres ? selectedPark?.sizeAcres?.toFixed(1) + ' acres' : 'Unknown' }
-                </div>
-
-                { !!selectedPark?.amenities?.length && (
-                    <div className='tw:flex tw:flex-wrap tw:space-x-2 tw:space-y-2'>
-                        { selectedPark.amenities.map((a: string) => (
-                            <div className='tw:w-fit'>
-                                <Chip label={a}/>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-            
-            <div className='tw:flex tw:flex-col tw:py-4 tw:h-full tw:overflow-y-auto'>
-                <div className='tw:flex tw:items-center tw:text-lg tw:font-bold tw:pb-3'>
-                    Parks you may also like:
-                    
-                    <div className='tw:w-fit tw:-mt-2.5'>
-                        <Tooltip title="Click to learn more">
-                            <IconButton size='small'>
-                                <InfoIcon fontSize='small'/>
-                            </IconButton>
+                    { selectedPark?.type && (
+                        <div>
+                            <span className='tw:font-bold'>Type: </span>
+                            <span className='tw-font-semibold tw-text-gray-700'>{ selectedPark?.type }</span>
+                        </div>
+                    )}
+                    <div className='tw:flex'>
+                        <span className='tw:font-bold'>Website: </span>
+                        <Tooltip title="Open in new tab" >
+                            <a 
+                                href={selectedPark.website}
+                                target="_blank"
+                                className='tw:pl-2 tw:underline tw:text-gray-600 tw:hover:text-primary tw:break-all'
+                            >
+                                { selectedPark?.website || 'Unknown' }
+                            </a>
                         </Tooltip>
                     </div>
-                </div>
 
-                
-                <div className="tw:flex tw:flex-col tw:space-y-2 tw:overflow-y-auto tw:pr-4">
-                    {similarParks.map((p) => (
-                            <div>
-                                <ParkCard
-                                    key={p.id}
-                                    park={p}
-                                    handleCardClick={() => {}}
-                                />
-                            </div>
-                    ))}
-                </div>
-                
+                    <div>
+                        <span className='tw:font-bold'>Address:</span> { selectedPark?.address ? selectedPark?.address : 'Unknown' }
+                    </div>
 
-            </div>
+                    <div>
+                        <span className='tw:font-bold'>Size:</span> { selectedPark?.sizeAcres ? selectedPark?.sizeAcres?.toFixed(1) + ' acres' : 'Unknown' }
+                    </div>
+
+                    { !!selectedPark?.amenities?.length && (
+                        <div className='tw:flex tw:flex-wrap tw:space-x-2 tw:space-y-2'>
+                            { selectedPark.amenities.map((a: string) => (
+                                <div className='tw:w-fit'>
+                                    <Chip label={a}/>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={value} index={1}>
+                Reviews coming soon!
+            </CustomTabPanel>
         </div>
     )
-
 };
 
 export default ParkDetails;

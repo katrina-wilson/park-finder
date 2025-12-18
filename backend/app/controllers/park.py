@@ -11,6 +11,32 @@ def get_all_parks(db: Session) -> List[ParkBase]:
     return db.query(Park).all()
 
 
+def get_park_by_id(park_id: UUID, db: Session) -> List[ParkBase]:
+    park = db.query(Park).filter(Park.id == park_id).first()
+    if not park:
+        raise HTTPException(status_code=404, detail="Park not found")
+    return park
+
+
+def get_park_by_id_with_user_info(park_id: UUID, user_id: UUID, db: Session) -> List[ParkBase]:
+    park = db.query(Park).filter(Park.id == park_id).first()
+
+    if not park:
+        raise HTTPException(status_code=404, detail="Park not found")
+    
+    park_out = ParkUserInfoOut.model_validate(park)
+    visited_park = db.query(VisitedPark).filter(
+        VisitedPark.user_id == user_id,
+        VisitedPark.park_id == park_id
+    ).first()
+    if visited_park:
+        park_out.visited_at = visited_park.visited_at
+        park_out.updated_at = visited_park.updated_at
+        park_out.rating = visited_park.rating
+        park_out.review = visited_park.review   
+    return park_out
+
+
 def get_all_parks_with_user_info(user_id: UUID, db: Session) -> List[ParkUserInfoOut]:
     parks = db.query(Park).all()
     

@@ -13,7 +13,7 @@ export function createAppTheme() {
   const primaryDark = getCSSVariable("--color-primary-dark", "#2A1B2A");
 
   const secondaryLight = getCSSVariable("--color-secondary-light", "#D2E2E1");
-  const secondaryMain = getCSSVariable("--color-secondary", "#204242");
+  const secondaryMain = getCSSVariable("--color-secondary", "#D27E00");
   const secondaryDark = getCSSVariable("--color-secondary-dark", "#1B2A2A");
 
   return createTheme({

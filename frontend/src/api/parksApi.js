@@ -13,6 +13,18 @@ export const fetchAllParksByUserIdApi = async (userId) => {
     return response.data;
 };
 
+export const fetchParkByIdApi = async (parkId) => {
+    const url = BASEURL + `/${parkId}`;
+    const response = await api.get(url);
+    return response.data;
+};
+
+export const fetchParkWithUserInfoByIdApi = async (parkId, userId) => {
+    const url = BASEURL + `/${parkId}/with-user-info/${userId}`;
+    const response = await api.get(url);
+    return response.data;
+};
+
 export const fetchSimilarParksApi = async (targetParkId, limit = 5) => {
     const url = BASEURL + `/${targetParkId}/similar?limit=${limit}`;
     const response = await api.get(url);

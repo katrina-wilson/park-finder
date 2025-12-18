@@ -16,10 +16,10 @@ function Home() {
     const [selectedPark, setSelectedPark] = React.useState(null);
 
     React.useEffect(() => {
-        if (status === 'idle') {
+        if (!parks || parks.length === 0) {
             dispatch(fetchAllParks());
         }
-    }, [status, dispatch]);
+    }, [parks, dispatch]);
 
     React.useEffect(() => {
         setSearchFilterParks(parks);
@@ -41,7 +41,7 @@ function Home() {
 
             <div className='tw:flex tw:md:flex-row tw:flex-col tw:p-6 tw:w-full tw:h-full tw:bg-background tw:space-x-6'>
 
-                <div className='tw:w-fit tw:min-w-[65%] tw:h-full'>
+                <div className='tw:w-fit tw:w-full tw:h-full'>
                     <Map
                         allParks={parks}
                         searchFilterParks={searchFilterParks}
@@ -50,7 +50,7 @@ function Home() {
                     />
                 </div>
 
-                <div className="tw:flex tw:flex-col tw:w-full tw:h-full">
+                <div className="tw:flex tw:flex-col tw:w-[650px] tw:h-full">
                     {status === 'loading' && (
                         <CircularProgress/>
                     )}

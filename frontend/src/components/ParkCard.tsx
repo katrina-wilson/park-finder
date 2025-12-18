@@ -7,7 +7,6 @@ import StarIcon from '@mui/icons-material/Star';
 
 interface ParkCardProps {
   park: Park;
-  isSelected: boolean;
   handleCardClick?: (park: Park) => void;
 };
 
@@ -59,11 +58,11 @@ function ParkCard({ park, handleCardClick }: ParkCardProps) {
                     
                     <CardContent className="tw:p-2">
                         <div className="tw:flex tw:w-full tw:items-center">
-                            <div className="tw:text-xl tw:font-bold tw:w-full">
+                            <div className="tw:text-xl tw:font-bold tw:w-full tw:truncate tw:pr-2">
                                 {park?.name}
                             </div>  
-                            <div className="tw:text-sm tw:flex tw:items-center tw:mt-1">
-                                <StarIcon fontSize="small" />
+                            <div className="tw:text-sm tw:flex tw:items-center">
+                                <StarIcon fontSize="small" color="secondary"/>
                                 4.5
                             </div>
                         </div>
@@ -73,17 +72,17 @@ function ParkCard({ park, handleCardClick }: ParkCardProps) {
 
                         {park?.amenities && park.amenities.length > 0 && (
                             <div className="tw:flex tw:flex-wrap tw:gap-1 tw:mb-2 tw:w-full">
-                                {park.amenities.slice(0,3).map((amenity) => (
+                                {park.amenities.slice(0, 2).map((amenity) => (
                                     <Chip 
                                         key={amenity}
-                                        label={amenity}
+                                        label={amenity.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
                                         size="small"
                                         className="tw-rounded tw-text-xs"
                                     />
                                 ))}
-                                {park.amenities.length > 3 && (
+                                {park.amenities.length > 2 && (
                                     <div className="tw:text-xs">
-                                        +{park.amenities.length - 3}
+                                        +{park.amenities.length - 2}
                                     </div>
                                 )}
                             </div>

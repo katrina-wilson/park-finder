@@ -6,6 +6,7 @@ import { Park } from '../types';
 import { Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMapCenter } from "../stores/parksSlice";
+import { useNavigate } from 'react-router';
 
 
 interface MapProps {
@@ -32,6 +33,7 @@ function ZoomToPark({ center, zoom }: ZoomToParkProps) {
 function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: MapProps) {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [localMapCenter, setLocalMapCenter] = React.useState(null);
 
@@ -48,14 +50,15 @@ function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: Map
     }
   }, [allParks, dispatch, mapCenter]);
 
-  const center = selectedPark
-    ? [selectedPark.lat, selectedPark.lon] as [number, number]
-    : localMapCenter;
+  const center = selectedPark ? [selectedPark.lat, selectedPark.lon] as [number, number] : localMapCenter;
 
   if (!center) return null;
 
   const zoomLevel = selectedPark ? 15 : 10;
 
+  const handleViewDetails = (park: Park) => {
+    navigate(`/home/parks/${park.id}`);
+  };
 
   return (
     <div className='tw:h-full tw:w-full tw:rounded-2xl tw:shadow tw:overflow-hidden tw:border tw:border-border'>
@@ -89,7 +92,7 @@ function Map({ allParks, searchFilterParks, selectedPark, setSelectedPark }: Map
                     <div className='tw:flex tw:w-full tw:justify-end'>
                       <Button 
                         variant='contained'
-                        onClick={() => setSelectedPark(p)}
+                        onClick={() => handleViewDetails(p)}
                       >
                         View Details
                       </Button>
