@@ -26,7 +26,7 @@ class ParkSimilarityResponse(ParkBase):
     model_config = {"from_attributes": True}
 
 class ParkUserInfoOut(ParkBase):
-    visited_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    visited_date: Optional[datetime] = None
+    updated_date: Optional[datetime] = None
     rating: Optional[int] = None
     review: Optional[str] = None

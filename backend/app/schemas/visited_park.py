@@ -11,14 +11,16 @@ class VisitedParkCreate(BaseModel):
 
 class VisitedParkUpdate(BaseModel):
     rating: Optional[int] = Field(None, ge=1, le=5)
-    review: Optional[str]
+    review: Optional[str] = None
+    visited_date: Optional[datetime] = None
 
 class VisitedParkOut(BaseModel):
     id: UUID
     park_id: UUID
     rating: Optional[int]
     review: Optional[str]
-    visited_at: datetime
+    visited_date: Optional[datetime]
+    updated_date: datetime
 
     class Config:
         from_attributes = True

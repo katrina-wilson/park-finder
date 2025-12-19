@@ -16,8 +16,8 @@ class VisitedPark(Base):
     rating = Column(Integer, nullable=True)
     review = Column(Text, nullable=True)
 
-    visited_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    visited_date = Column(DateTime(timezone=True), server_default=func.now())
+    updated_date = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship("User", back_populates="visited_parks")
     park = relationship("Park", back_populates="visited_by")

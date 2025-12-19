@@ -30,8 +30,8 @@ def get_park_by_id_with_user_info(park_id: UUID, user_id: UUID, db: Session) -> 
         VisitedPark.park_id == park_id
     ).first()
     if visited_park:
-        park_out.visited_at = visited_park.visited_at
-        park_out.updated_at = visited_park.updated_at
+        park_out.visited_date = visited_park.visited_date
+        park_out.updated_date = visited_park.updated_date
         park_out.rating = visited_park.rating
         park_out.review = visited_park.review   
     return park_out
@@ -48,8 +48,8 @@ def get_all_parks_with_user_info(user_id: UUID, db: Session) -> List[ParkUserInf
         park_out = ParkUserInfoOut.model_validate(park)
         vp = visited_parks_dict.get(park.id)
         
-        park_out.visited_at = getattr(vp, "visited_at", None)
-        park_out.updated_at = getattr(vp, "updated_at", None)
+        park_out.visited_date = getattr(vp, "visited_date", None)
+        park_out.updated_date = getattr(vp, "updated_date", None)
         park_out.rating = getattr(vp, "rating", None)
         park_out.review = getattr(vp, "review", None)
 

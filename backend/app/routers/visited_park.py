@@ -36,4 +36,5 @@ def update_visit(
         park_id=str(park_id),
         rating=payload.rating,
         review=payload.review,
+        visited_date=payload.visited_date,
     )
